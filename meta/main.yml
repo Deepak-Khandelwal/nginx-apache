@@ -1,0 +1,24 @@
+ ---
+dependencies: []
+
+galaxy_info:
+  role_name: ansible-nginx
+  author: Deepak Khandelwal
+  description: Nginx & apache installation for Linux.
+  company: "sliceit.com"
+  license: "license (BSD)"
+  min_ansible_version: 2.4
+  platforms:
+    - name: RHEL
+      versions:
+        - 6
+        - 7
+        - 8
+  galaxy_tags:
+    - development
+    - web
+    - nginx
+    - reverse
+    - proxy
+    - load
+    - balancer 

@@ -1,0 +1,6 @@
+---
+# tasks file for nginx-apache
+- include: apache.yml
+  when: "'app' in {{group_names}}"
+- include: nginx.yml
+  when: "'web' in {{group_names}}"

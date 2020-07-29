@@ -1,0 +1,31 @@
+---
+# vars file for nginx-apache
+apache_service: httpd
+apache_daemon: httpd
+apache_daemon_path: /usr/sbin/
+apache_server_root: /etc/httpd
+apache_conf_path: /etc/httpd/conf.d
+apache_document_root: /var/www/html/
+
+
+__apache_packages:
+  - httpd
+  - httpd-devel
+  - mod_ssl
+  - openssh
+
+apache_ports_configuration_items:
+  - regexp: "^Listen "
+    line: "Listen {{ apache_listen_port }}"
+  - regexp: "^#?NameVirtualHost "
+    line: "NameVirtualHost {{ apache_listen_ip }}:{{ apache_listen_port }}"
+
+
+root_group: root
+nginx_conf_path: /etc/nginx/conf.d
+nginx_conf_file_path: /etc/nginx/nginx.conf
+nginx_mime_file_path: /etc/nginx/mime.types
+nginx_pidfile: /var/run/nginx.pid
+nginx_vhost_path: /etc/nginx/conf.d
+nginx_default_vhost_path: /etc/nginx/conf.d/default.conf
+__nginx_user: "nginx"
