@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Role Name
 =========
 
@@ -33,3 +34,6 @@ BSD
 Author Information
 ------------------
 This role was created in 2020 by Deepak Khandelwal.
+=======
+# nginx-apache
+>>>>>>> 4d36c6e0b4807d563b4d8eb27d2c0baeaaac67fd
