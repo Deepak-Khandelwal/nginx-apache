@@ -1,4 +1,4 @@
-# Harden your Server Configuration to prevent unwanted cyber attacks
+# Harden your Server Configuration to Prevent Unwanted Cyber Attacks
 
 # 1. Blind SQL Injection
 SQL injection is a vulnerability that allows an attacker to alter back-end SQL statements by manipulating the user input. An SQL injection occurs when web applications accept user
@@ -235,7 +235,182 @@ Mitigates Cross-Site Scripting (XSS) attacks
      set X-Xss-Protection "1; mode=block"
 ```
 
+# 16. Use Secure Shell(SSH)
+Telnet and rlogin protocols uses plain text, not encrypted format which is the security breaches. SSH is a secure protocol that use encryption technology during communication with server.
 
+Never login directly as root unless necessary. Use “sudo” to execute commands. sudo are specified in /etc/sudoers file also can be edited with the “visudo” utility which opens in VI editor.
+
+It’s also recommended to change default SSH 22 port number with some other higher level port number. Open the main SSH configuration file and make some following parameters to restrict users to access.
+```sh
+    # vi /etc/ssh/sshd_config
+    #Disable root Login
+    PermitRootLogin no
+    AllowUsers username
+    # Use SSH Protocol 2 Version
+    Protocol 2
+```
+Use key based login and disable password based authentication.
+```sh
+   # vi /etc/ssh/sshd_config
+   PasswordAuthentication no
+```
+
+
+# 17. Keep System updated
+Always keep system updated with latest releases patches, security fixes and kernel when it’s available.
+```sh
+     # yum updates
+     # yum check-update
+```
+# 18. Turn on SELinux
+Security-Enhanced Linux (SELinux) is a compulsory access control security mechanism provided in the kernel. Disabling SELinux means removing security mechanism from the system. Think twice carefully before removing, if your system is attached to internet and accessed by the public, then think some more on it.
+
+SELinux provides three basic modes of operation and they are.
+
+- Enforcing: This is default mode which enable and enforce the SELinux security policy on the machine.
+- Permissive: In this mode, SELinux will not enforce the security policy on the system, only warn and log actions. This mode is very useful in term of troubleshooting SELinux related issues.
+Disabled: SELinux is turned off.
+- You can view current status of SELinux mode from the command line using ‘system-config-selinux‘, ‘getenforce‘ or ‘sestatus‘ commands.
+```sh
+    # sestatus
+```
+It also can be managed from ‘/etc/selinux/config‘ file, where you can enable or disable it.
+
+# 19. Enable Iptables (Firewall)
+It’s highly recommended to enable Linux firewall to secure unauthorised access of your servers. Apply rules in iptables to filters incoming, outgoing and forwarding packets. We can specify the source and destination address to allow and deny in specific udp/tcp port number.
+```sh
+   # systemctl start/restart firewalld
+   # systemctl enable firewalld
+   # chkconfig iptables on
+```
+# 20. Turn Off IPv6
+If you’re not using a IPv6 protocol, then you should disable it because most of the applications or policies not required IPv6 protocol and currently it doesn’t required on the server. Go to network configuration file and add followings lines to disable it.
+```sh
+   # vi /etc/sysconfig/network
+   NETWORKING_IPV6=no
+   IPV6INIT=no
+```
+# 21. Restrict Users to Use Old Passwords
+This is very useful if you want to disallow users to use same old passwords. The old password file is located at /etc/security/opasswd. This can be achieved by using PAM module.
+```sh
+   # Open ‘/etc/pam.d/system-auth‘ file under RHEL / CentOS / Fedora.
+   # vi /etc/pam.d/system-auth
+   # Add the following line to ‘auth‘ section.
+   auth        sufficient    pam_unix.so likeauth nullok
+   # Add the following line to ‘password‘ section to disallow a user from re-using last 5   
+   # password of his or her.
+   password   sufficient    pam_unix.so nullok use_authtok md5 shadow remember=5
+```
+Only last 5 passwords are remember by server. If you tried to use any of last 5 old passwords, you will get an error like.
+```sh
+    # Password has been already used. Choose another.
+```
+# 22. Monitor User Activities
+If you are dealing with lots of users, then its important to collect the information of each user activities and processes consumed by them and analyse them at a later time or in case if any kind of performance, security issues. But how we can monitor and collect user activities information.
+
+There are two useful tools called ‘psacct‘ and ‘acct‘ are used for monitoring user activities and processes on a system. These tools runs in a system background and continuously tracks each user activity on a system and resources consumed by services such as Apache, MySQL, SSH, FTP, etc.
+
+# 23. Ignore ICMP or Broadcast Request
+Add following line in “/etc/sysctl.conf” file to ignore ping or broadcast request.
+```sh
+    # Ignore ICMP request:
+    net.ipv4.icmp_echo_ignore_all = 1
+    # Ignore Broadcast request: 
+    net.ipv4.icmp_echo_ignore_broadcasts = 1
+```
+Load new settings or changes, by running following command
+```sh
+    # sysctl -p
+```
+# 24. Locking User Accounts After Login Failures
+Under Linux you can use the faillog command to display faillog records or to set login failure limits. faillog formats the contents of the failure log from /var/log/faillog database / log file. It also can be used for maintains failure counters and limits To see failed login attempts.
+```sh
+    # Enter: 
+    faillog
+    # To unlock an account after login failures, run:
+    faillog -r -u userName
+```
+Note: you can use passwd command to lock and unlock accounts:
+```sh
+    # lock Linux account
+    passwd -l userName
+    # unlock Linux account
+    passwd -u userName
+```
+# 25. Make Sure No Non-Root Accounts Have UID Set To 0
+Only root account have UID 0 with full permissions to access the system. 
+Type the following command to display all accounts with UID set to 0.
+```sh
+   awk -F: '($3 == "0") {print}' /etc/passwd
+   # You should only see one line as follows:
+   root:x:0:0:root:/root:/bin/bash
+```
+If you see other lines, delete them or make sure other accounts are authorized by you to use UID 0.
+
+# 26. Disable Unwanted Linux Services
+Disable all unnecessary services and daemons (services that runs in the background). You need to remove all unwanted services from the system start-up. Type the following command to list all services which are started at boot time in run level # 3:
+```sh
+   chkconfig --list | grep '3:on'
+   # To disable service, enter:
+   service serviceName stop
+   chkconfig serviceName off
+```
+# 27. Separate Disk Partitions For Linux System
+Separation of the operating system files from user files may result into a better and secure system. Make sure the following filesystems are mounted on separate partitions:
+
+/usr
+/home
+/var and /var/tmp
+/tmp
+
+Create separate partitions for Apache and FTP server roots. Edit /etc/fstab file and make sure you add the following configuration options:
+
+- noexec – Do not set execution of any binaries on this partition (prevents execution of binaries but allows scripts).
+- nodev – Do not allow character or special devices on this partition (prevents use of device files such as zero, sda etc).
+- nosuid – Do not set SUID/SGID access on this partition (prevent the setuid bit).
+
+Sample /etc/fstab entry to to limit user access on /dev/sda5 (ftp server root directory):
+```sh
+    /dev/sda5  /ftpdata          ext3    defaults,nosuid,nodev,noexec 1 2
+```
+# 28. Set Up Password Aging For Linux Users For Better Security
+The chage command changes the number of days between password changes and the date of the last password change. This information is used by the system to determine when a user must change his/her password. The /etc/login.defs file defines the site-specific configuration for the shadow password suite including password aging configuration.
+```sh
+    # chage -M 99999 userName
+    # To get password expiration information, enter:
+    # chage -l userName
+```
+Finally, you can also edit the /etc/shadow file in the following fields:
+```sh
+    {userName}:{password}:{lastpasswdchanged}:{Minimum_days}:{Maximum_days}:{Warn}:{Inactive}:{Expire}:
+```
+Where,
+
+- Minimum_days: The minimum number of days required between password changes i.e. the number of days left before the user is allowed to change his/her password.
+- Maximum_days: The maximum number of days the password is valid (after that user is forced to change his/her password).
+- Warn : The number of days before password is to expire that user is warned that his/her password must be changed.
+- Expire : Days since Jan 1, 1970 that account is disabled i.e. an absolute date specifying when the login may no longer be used.
+I recommend chage command instead of editing the /etc/shadow file by hand:
+```sh
+    chage -M 60 -m 7 -W 7 userName
+```
+
+# 29. Check for hidden open ports with netstat
+Open ports can reveal information about system or network architecture, and increase your attack surface. If you don’t need a port, close it. If you see an open port you don’t recognize, use netstat to investigate.
+```sh
+    netstant -antp
+```
+
+# 30. Set root permissions for core system files
+There are some core files that should only be usable by a root user. Otherwise, an unauthorized user could read passwords, or set up recurring commands using cron.
+Set user/group permissions to:
+```sh
+    #chown root:root
+    #chmod og-rwx
+```
+
+    
+    
 
 
 
