@@ -1,4 +1,4 @@
-# Harden your Server Configuration to stop unwanted cyber attacks
+# Harden your Server Configuration to prevent unwanted cyber attacks
 
 # 1. Blind SQL Injection
 SQL injection is a vulnerability that allows an attacker to alter back-end SQL statements by manipulating the user input. An SQL injection occurs when web applications accept user
