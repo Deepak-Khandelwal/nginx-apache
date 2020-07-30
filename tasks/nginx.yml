@@ -23,3 +23,6 @@
   template:
         src: default.conf.j2
         dest: '{{ nginx_default_vhost_path }}'
+
+- name: install modsecurity module
+  yum: pkg={{ nginx_modsecurity_rpm }} state=present

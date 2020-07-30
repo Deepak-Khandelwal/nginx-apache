@@ -54,3 +54,17 @@ apache_options: "-Indexes +FollowSymLinks"
 apache_state: started
 
 apache_packages_state: present
+
+nginx_modsecurity_rpm: https://raw.githubusercontent.com/mkubenka/mkrepo/master/nginx-module-modsecurity/nginx-module-modsecurity-1.10.1.2.9.1-2.x86_64.rpm
+
+clickjacking: "Header always append X-Frame-Options SAMEORIGIN"
+
+SSLCipherSuite: "ALL:!aNULL:!ADH:!eNULL:!LOW:!EXP:RC4+RSA:+HIGH:+MEDIUM"
+
+ssl_protocol: "ssl_protocols TLSv1.2 TLSv1.1 TLSv1"
+
+X-content-type: "set X-Content-Type-Options "nosniff""
+
+X-Xss-Protection: "set X-Xss-Protection "1; mode=block"
+
+Directory_list: "Options FollowSymLinks"
