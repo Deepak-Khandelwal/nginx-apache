@@ -32,3 +32,9 @@
      - { src: 'internal.html',dest: '/var/www/html/internal/index.html', mode: '0644'}
      - { src: 'external.html',dest: '/var/www/html/external/index.html', mode: '0644'}
      - { src: 'cached.html',dest: '/var/www/html/cached/index.html', mode: '0644'}
+
+- name: copy apache config file
+  template:
+        src: httpd.conf.j2
+        dest: '{{ apache_confg_file_path }}'
+

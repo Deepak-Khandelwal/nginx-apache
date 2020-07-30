@@ -19,7 +19,7 @@
     dest: '{{ nginx_conf_file_path }}'
 
 
-- name: copy nginx config file
+- name: copy virtual host config file
   template:
         src: default.conf.j2
         dest: '{{ nginx_default_vhost_path }}'

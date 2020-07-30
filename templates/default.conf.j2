@@ -1,13 +1,24 @@
 server {
         listen 80;
         listen [::]:80;
+        server_tokens off
        
         index index.html index.htm;
 
         access_log /var/log/nginx/reverse-access.log;
         error_log /var/log/nginx/reverse-error.log;
 
-       server_name _;
+        server_name _;
+        client_body_timeout 5s;
+        client_header_timeout 5s;
+        {{ ssl_protocol }}
+        client_body_buffer_size 200K;
+        client_header_buffer_size 2k;
+        client_max_body_size 200k;
+        large_client_header_buffers 31k;
+
+
+
        location /internal{
           root "{{ apache_document_root }}"/internal;
           proxy_pass http://"{{ hostvars.app }}"/internal;
@@ -16,8 +27,6 @@ server {
           proxy_set_header X-Real-IP $remote_addr ;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for ;
           proxy_max_temp_file_size 0 ;
-          client_max_body_size 10m ;
-          client_body_buffer_size 128k; 
           proxy_connect_timeout 90 ;
           proxy_send_timeout 90 ;
           proxy_read_timeout 90 ;
@@ -37,6 +46,17 @@ server {
           proxy_set_header Host $host;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
           proxy_pass http://"{{ hostvars.app }}"/external;
+          proxy_max_temp_file_size 0 ;
+          proxy_connect_timeout 90 ;
+          proxy_send_timeout 90 ;
+          proxy_read_timeout 90 ;
+          proxy_buffer_size 4k ;
+          proxy_buffers 4 32k ;
+          proxy_busy_buffers_size 64k ;
+          proxy_temp_file_write_size 64k;
+          limit_except GET HEAD POST { deny all; }
+          ModSecurityEnabled on; 
+          ModSecurityConfig modsecurity.conf;
           
     
      }

@@ -6,6 +6,7 @@ apache_daemon_path: /usr/sbin/
 apache_server_root: /etc/httpd
 apache_conf_path: /etc/httpd/conf.d
 apache_document_root: /var/www/html/
+apache_confg_file_path: /etc/httpd/conf/httpd.conf
 
 
 __apache_packages:
